@@ -77,13 +77,21 @@ async function createLocations(locations = []) {
 }
 async function createProfiles(profiles) {
     for (var i = 0; i < profiles.length; i++) {
-        var profile = profiles[i]
-        var dbProfile = await Profile.create(profile)
-        if (profile.location) {
+        var transaction = await db.transaction()
+        try {
+            var profile = profiles[i]
+            var dbProfile = await Profile.create(profile, { transaction })
+            
+            if (!profile.location) return
+
             var dbLocation = await Location.findByName(profile.location) || await Location.create({
                 name: profile.location
-            })
-            await dbProfile.setLocation(dbLocation)
+            }, { transaction })
+            await dbProfile.setLocation(dbLocation, { transaction })
+
+            await transaction.commit()
+        } catch (err) {
+            await transaction.rollback()
         }
     }
 }

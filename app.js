@@ -28,4 +28,13 @@ app.get('/', (req, res, next) => {
     })
 })
 
+app.use((err, req, res, next) => {
+    res.status(err.status || 500)
+    res.json({
+        name: err.name,
+        message: err.message,
+        stack: err.stack
+    })
+})
+
 module.exports = app

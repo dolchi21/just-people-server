@@ -80,7 +80,9 @@ async function createProfiles(profiles) {
         var profile = profiles[i]
         var dbProfile = await Profile.create(profile)
         if (profile.location) {
-            var dbLocation = await Location.findByName(profile.location) || await Location.create(profile.location)
+            var dbLocation = await Location.findByName(profile.location) || await Location.create({
+                name: profile.location
+            })
             await dbProfile.setLocation(dbLocation)
         }
     }

@@ -18,6 +18,10 @@ router.get('/', (req, res, next) => {
     })
 })
 
+router.get('/env', (req, res, next) => {
+    res.json(process.env)
+})
+
 router.get('/profiles', (req, res, next) => {
     var Profile = db.model('Profile')
     Profile.all({

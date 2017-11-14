@@ -4,6 +4,8 @@ var router = express.Router()
 var db = require('../db')
 var Location = db.model('Location')
 
+var LocationService = require('../services/location')
+
 router.get('/', (req, res, next) => {
     Location.all().then(locations => {
         var data = locations.map(i => i.get())

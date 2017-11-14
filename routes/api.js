@@ -1,4 +1,7 @@
+var fs = require('fs')
+
 var express = require('express')
+var multer = require('multer')
 var router = express.Router()
 
 var LocationService = require('../services/location')
@@ -30,12 +33,10 @@ router.get('/queries', async (req, res, next) => {
         'SELECT * FROM Profiles',
         'SELECT * FROM Locations'
     ]
-    var results = queries.map(async sql => {
-        return {
-            sql,
-            result: await db.query(sql)
-        }
-    })
+    var results = queries.map(async sql => ({
+        sql,
+        result: await db.query(sql)
+    }))
     var data = await Promise.all(results)
     res.json({
         data
@@ -48,4 +49,25 @@ router.get('/database', (req, res, next) => {
     res.sendFile(filename)
 })
 
+var upload = multer({
+    dest: 'tmp/'
+})
+router.post('/database', upload.single('database'), async (req, res, next) => {
+    await db.close()
+    await renameFile('./db.sqlite', './db.' + Date.now() + '.sqlite')
+    await renameFile(req.file.path, './db.sqlite')
+    res.json(req.file)
+})
+router.get('/shutdown', (req, res, next) => {
+    res.on('finish', () => process.exit(0))
+    res.send('Server will shutdown now.')
+})
+
 module.exports = router
+
+function renameFile(oldName, newName) {
+    return new Promise((resolve, reject) => {
+        fs.rename(oldName, newName, err =>
+            err ? reject(err) : resolve())
+    })
+}

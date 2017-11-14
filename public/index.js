@@ -21,16 +21,17 @@ async function runTests() {
     ResponsesContainer.innerHTML = null
     var endpoints = getEndpoints()
     endpoints.map(async ep => {
-        var response = await axios.get(ep)
-        var res = UI.Response(response)
-        ResponsesContainer.appendChild(res)
+        axios.get(ep).catch(err => err.response).then(response => {
+            var res = UI.Response(response)
+            ResponsesContainer.appendChild(res)
+        })
     })
 }
 
 var UI = (function UI() {
     function Response(response) {
         var div = document.createElement('div')
-        div.className = 'ResponseData ' + (response.status ? '' : 'error')
+        div.className = 'ResponseData ' + (response.status === 200 ? '' : 'error')
         div.appendChild(ResponseDataURL(response.config.url))
         div.appendChild(ResponseStatus(response.status, JSON.stringify(response.data.data)))
         return div

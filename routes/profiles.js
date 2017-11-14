@@ -11,7 +11,17 @@ router.get('/', (req, res, next) => {
     }).then(profiles => {
         var data = profiles.map(i => i.get())
         res.json({ data })
-    })
+    }).catch(next)
+})
+
+router.get('/:id', (req, res, next) => {
+    Profile.findById(req.params.id, {
+        include: [{ all: true }]
+    }).then(profile => {
+        res.json({
+            data: profile.get()
+        })
+    }).catch(next)
 })
 
 router.use('/stats/byLocation', (req, res, next) => {

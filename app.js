@@ -13,6 +13,9 @@ app.use(cors())
 
 app.use(logger('dev'))
 app.use(bodyParser.json())
+
+app.use(express.static('./public'))
+
 app.use('/api', (req, res, next) => {
     var timeout = RESPONSE_DELAY ? +RESPONSE_DELAY : 0
     setTimeout(next, timeout)

@@ -22,15 +22,6 @@ app.use('/api', (req, res, next) => {
 })
 app.use('/api', require('./routes/api'))
 
-var appGetRoot = {
-    start: new Date()
-}
-app.get('/', (req, res, next) => {
-    res.json({
-        data: appGetRoot
-    })
-})
-
 app.use((err, req, res, next) => {
     res.status(err.status || 500)
     res.json({

@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
     Location.all().then(locations => {
         var data = locations.map(i => i.get())
         res.json({ data })
-    })
+    }).catch(next)
 })
 
 router.get('/:id', async (req, res, next) => {

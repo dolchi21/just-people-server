@@ -32,10 +32,11 @@ router.get('/queries', async (req, res, next) => {
         sql,
         result: await db.query(sql)
     }))
-    var data = await Promise.all(results)
-    res.json({
-        data
-    })
+    Promise.all(results).then(data => {
+        res.json({
+            data
+        })
+    }).catch(next)
 })
 
 router.get('/database', (req, res, next) => {

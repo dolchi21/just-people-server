@@ -7,7 +7,10 @@ function connection() {
     })
     
     var Profile = require('./models/Profile')(sequelize)
+    var ProfileImage = require('./models/ProfileImage')(sequelize)
     var Location = require('./models/Location')(sequelize)
+
+    Profile.hasMany(ProfileImage)
 
     Profile.belongsTo(Location)
     Location.belongsTo(Location)

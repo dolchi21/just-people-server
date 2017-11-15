@@ -1,5 +1,6 @@
 var db = require('../db')
 var Profile = db.model('Profile')
+var ProfileImage = db.model('ProfileImage')
 var Location = db.model('Location')
 
 function makeData() {
@@ -81,7 +82,12 @@ async function createProfiles(profiles) {
         try {
             var profile = profiles[i]
             var dbProfile = await Profile.create(profile, { transaction })
-            
+
+            await dbProfile.createProfileImage({
+                role: 'avatar',
+                url: profile.avatar
+            }, { transaction })
+
             if (!profile.location) return
 
             var dbLocation = await Location.findByName(profile.location) || await Location.create({
@@ -91,6 +97,7 @@ async function createProfiles(profiles) {
 
             await transaction.commit()
         } catch (err) {
+            console.error(err)
             await transaction.rollback()
         }
     }

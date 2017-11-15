@@ -20,12 +20,15 @@ async function runTests() {
     var ResponsesContainer = document.querySelector('.ResponsesContainer')
     ResponsesContainer.innerHTML = null
     var endpoints = getEndpoints()
-    endpoints.map(async ep => {
-        axios.get(ep).catch(err => err.response).then(response => {
+    function run(ep) {
+        return axios.get(ep).catch(err => err.response).then(response => {
             var res = UI.Response(response)
             ResponsesContainer.appendChild(res)
         })
-    })
+    }
+    for (var i in endpoints) {
+        await run(endpoints[i])
+    }
 }
 
 var UI = (function UI() {
@@ -58,3 +61,12 @@ var UI = (function UI() {
 })()
 
 runTests()
+
+var Actions = (function Actions() {
+    function populate(){
+        return axios.get('/api/tasks/populate')
+    }
+    return {
+        populate
+    }
+})()

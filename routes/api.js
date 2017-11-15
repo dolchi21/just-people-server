@@ -26,6 +26,7 @@ router.use('/tasks', require('./tasks'))
 router.get('/queries', async (req, res, next) => {
     var queries = [
         'SELECT * FROM Profiles',
+        'SELECT * FROM ProfileImages',
         'SELECT * FROM Locations'
     ]
     var results = queries.map(async sql => ({

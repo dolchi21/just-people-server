@@ -1,4 +1,6 @@
 var express = require('express')
+var validator = require('validator')
+
 var router = express.Router()
 
 var db = require('../db')
@@ -14,6 +16,31 @@ router.get('/', (req, res, next) => {
     }).catch(next)
 })
 
+router.post('/', (req, res, next) => {
+    var { name, phone, gender } = req.body
+    if (!name || !phone || !gender) {
+        var err = new Error('Data is missing')
+        err.data = req.body
+        return next(err)
+    }
+
+    if (!validator.isIn(gender, ['f', 'm', 't']))
+        return next(new Error('Gender is not valid'))
+
+    next()
+}, (req, res, next) => {
+    var { name, phone, gender } = req.body
+    Profile.create({
+        name,
+        phone,
+        gender
+    }).then(profile => {
+        res.json({
+            data: profile.get()
+        })
+    }).catch(next)
+})
+
 router.get('/:id', (req, res, next) => {
     Profile.findById(req.params.id, {
         include: [{ all: true }]
@@ -21,6 +48,26 @@ router.get('/:id', (req, res, next) => {
         res.json({
             data: profile.get()
         })
+    }).catch(next)
+})
+
+router.post('/:id/images', (req, res, next) => {
+    var { role, url } = req.body
+
+    next()
+}, (req, res, next) => {
+    var { role, url } = req.body
+    Profile.findById(req.params.id).then(async profile => {
+
+        var image = await profile.createProfileImage({
+            role,
+            url
+        })
+
+        res.json({
+            data: image.get()
+        })
+
     }).catch(next)
 })
 

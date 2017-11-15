@@ -24,11 +24,13 @@ app.use('/api', require('./routes/api'))
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500)
-    res.json({
+    var jres = {
         name: err.name,
         message: err.message,
         stack: err.stack
-    })
+    }
+    if (err.data) jres.data = data
+    res.json(jres)
 })
 
 module.exports = app

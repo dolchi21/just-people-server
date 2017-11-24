@@ -17,8 +17,8 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-    var { name, phone, gender } = req.body
-    if (!name || !phone || !gender) {
+    var { name, phone, gender, location } = req.body
+    if (!name || !phone || !gender || !location) {
         var err = new Error('Data is missing')
         err.data = req.body
         return next(err)
@@ -27,13 +27,17 @@ router.post('/', (req, res, next) => {
     if (!validator.isIn(gender, ['f', 'm', 't']))
         return next(new Error('Gender is not valid'))
 
+    if (!validator.isNumeric(location))
+        return next(new Error('Location is not valid'))
+
     next()
 }, (req, res, next) => {
-    var { name, phone, gender } = req.body
+    var { name, phone, gender, location } = req.body
     Profile.create({
         name,
         phone,
-        gender
+        gender,
+        LocationId: +location
     }).then(profile => {
         res.json({
             data: profile.get()

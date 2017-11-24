@@ -1,0 +1,38 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+
+<form action="/api/profiles" method="POST" target="_blank">
+    <div>
+        <input type="text" name="id" placeholder="id">
+    </div>
+    <div>
+        <input type="text" name="name" placeholder="name">
+    </div>
+    <div>
+        <input type="text" name="phone" placeholder="phone">
+    </div>
+    <div>
+        <select name="gender">
+            <option value="">gender</option>
+            <option value="m">m</option>
+            <option value="f">f</option>
+            <option value="t">t</option>
+        </select>
+    </div>
+    <div>
+        <select name="location">
+            <option value="">location</option>
+            <option value="1">Argentina</option>
+            <option value="2">Buenos Aires</option>
+            <option value="3">CABA</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit">create/update</button>
+    </div>
+</form>
+
+<script>
+    axios.get('/api/locations').then(locations => {
+
+    })
+</script>

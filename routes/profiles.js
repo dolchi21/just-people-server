@@ -6,12 +6,23 @@ var router = express.Router()
 var db = require('../db')
 var Location = db.model('Location')
 var Profile = db.model('Profile')
+var ProfileImage = db.model('ProfileImage')
+
+function ProfileInterface(profile) {
+    profile.avatar = (profile.ProfileImages.find(img => img.role === 'avatar') || {}).url
+    profile.images = profile.ProfileImages.filter(img => img.role !== 'avatar')
+    delete profile.ProfileImages
+    delete profile.description
+    return profile
+}
 
 router.get('/', (req, res, next) => {
     Profile.all({
-        include: [{ all: true }]
+        include: [{
+            model: ProfileImage
+        }]
     }).then(profiles => {
-        var data = profiles.map(i => i.get())
+        var data = profiles.map(i => i.get()).map(ProfileInterface)
         res.json({ data })
     }).catch(next)
 })
@@ -55,6 +66,18 @@ router.get('/:id', (req, res, next) => {
     }).catch(next)
 })
 
+router.get('/:id/images', (req, res, next) => {
+    var { id } = req.params
+    ProfileImage.all({
+        where: {
+            ProfileId: id
+        }
+    }).then(images => {
+        res.json({
+            data: images.map(i => i.get())
+        })
+    }).catch(next)
+})
 router.post('/:id/images', (req, res, next) => {
     var { role, url } = req.body
 

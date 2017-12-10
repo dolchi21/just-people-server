@@ -11,6 +11,9 @@ module.exports = function makeProfileModel(sequelize = require('../index'), Sequ
         },
         gender: {
             type: Sequelize.STRING
+        },
+        description: {
+            type: Sequelize.STRING
         }
     })
 

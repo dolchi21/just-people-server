@@ -9,8 +9,13 @@ var Profile = db.model('Profile')
 var ProfileImage = db.model('ProfileImage')
 
 function ProfileInterface(profile) {
+    profile.coordinates = profile.ProfileCoordinate && {
+        latitude: profile.ProfileCoordinate.latitude,
+        longitude: profile.ProfileCoordinate.longitude
+    }
     profile.avatar = (profile.ProfileImages.find(img => img.role === 'avatar') || {}).url
     profile.images = profile.ProfileImages.filter(img => img.role !== 'avatar')
+    delete profile.ProfileCoordinate
     delete profile.ProfileImages
     delete profile.description
     return profile
@@ -18,9 +23,7 @@ function ProfileInterface(profile) {
 
 router.get('/', (req, res, next) => {
     Profile.all({
-        include: [{
-            model: ProfileImage
-        }]
+        include: [{ all: true }]
     }).then(profiles => {
         var data = profiles.map(i => i.get()).map(ProfileInterface)
         res.json({ data })
@@ -61,7 +64,7 @@ router.get('/:id', (req, res, next) => {
         include: [{ all: true }]
     }).then(profile => {
         res.json({
-            data: profile.get()
+            data: ProfileInterface(profile.get())
         })
     }).catch(next)
 })
